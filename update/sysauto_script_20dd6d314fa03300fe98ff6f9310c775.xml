@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sysauto_script">
+    <sysauto_script action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <condition/>
+        <conditional>false</conditional>
+        <name>Find NeedIt Tasks Due Soon</name>
+        <run_as display_value="System Administrator">6816f79cc0a8016401c5a33be04be441</run_as>
+        <run_as_tz/>
+        <run_dayofmonth>1</run_dayofmonth>
+        <run_dayofweek>1</run_dayofweek>
+        <run_period/>
+        <run_start>2019-04-02 05:47:53</run_start>
+        <run_time>1970-01-01 16:05:00</run_time>
+        <run_type>daily</run_type>
+        <script><![CDATA[// Get today's time and date
+var rightNow = new GlideDateTime();
+var later = new GlideDateTime();
+var time24hrs = new GlideTime();
+time24hrs.setValue("24:00:00");
+later.add(time24hrs);
+gs.info(rightNow);
+gs.info(later);
+// Query the database for NeedIt Task records with Due date field values older
+// then the current time.  Only return NeedIt Task records that do not have
+// a State field value of Closed Complete.
+var nITasks = new GlideRecord('x_58872_needit_needit_task');
+nITasks.addQuery('due_date','>=',rightNow);
+nITasks.addQuery('due_date','<=', later);
+nITasks.addQuery('state','!=',3);
+
+nITasks.query();
+// Write a log message for each overdue NeedIt Task Record
+while(nITasks.next()){
+	gs.info("NeedIt Tasks due soon = " + nITasks.number);
+	gs.eventQueue('x_58872_needit.dueSoonNeedItTasks', nITasks, nITasks.number, gs.getUserName());
+}]]></script>
+        <sys_class_name>sysauto_script</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2019-04-02 05:54:36</sys_created_on>
+        <sys_id>20dd6d314fa03300fe98ff6f9310c775</sys_id>
+        <sys_mod_count>6</sys_mod_count>
+        <sys_name>Find NeedIt Tasks Due Soon</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sysauto_script_20dd6d314fa03300fe98ff6f9310c775</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2019-04-02 06:45:02</sys_updated_on>
+        <upgrade_safe>false</upgrade_safe>
+    </sysauto_script>
+</record_update>
